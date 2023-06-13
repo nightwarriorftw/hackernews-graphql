@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "hackernews"
+version = "0.1.0"
+description = ""
+authors = ["nightwarriorftw <amanv1999@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.2.2"
+django-graphql-jwt = "^0.3.4"
+django-filter = "^23.2"
+graphene-django = "^3.1.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
