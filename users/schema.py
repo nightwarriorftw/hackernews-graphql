@@ -9,7 +9,14 @@ class UserType(DjangoObjectType):
 
 
 class UserQuery(graphene.ObjectType):
+    me = graphene.Field(UserType)
     users = graphene.List(UserType)
+
+    def resolve_me(self, info, **kwargs):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("Not logged in!")
+        return user
 
     def resolve_users(self, info, **kwargs):
         return User.objects.all()
