@@ -21,10 +21,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # Custom
     "links",
-
     # Third party
     "graphene_django",
 ]
@@ -115,5 +113,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # GraphQL Configurations
 GRAPHENE = {
-    "SCHEMA": "hackernews.schema.schema"
+    "SCHEMA": "hackernews.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
 }
+
+
+# Authentication Configurations
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
