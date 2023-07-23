@@ -6,7 +6,7 @@ from users.schema import UserMutation
 from users.schema import UserQuery
 
 
-class Query(LinkQuery, UserQuery, graphene.ObjectType):
+class BaseQuery(LinkQuery, UserQuery, graphene.ObjectType):
     pass
 
 
@@ -16,4 +16,4 @@ class BaseMutation(LinkMutation, UserMutation, graphene.ObjectType):
     refresh_token = graphql_jwt.Refresh.Field()
 
 
-schema = graphene.Schema(query=Query, mutation=BaseMutation)
+schema = graphene.Schema(query=BaseQuery, mutation=BaseMutation)

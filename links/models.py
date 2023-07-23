@@ -1,10 +1,25 @@
 from django.db import models
+from common.models import Base
+from django.contrib.auth.models import User
 
 
-class Links(models.Model):
+class Links(Base):
     """Store information of the links."""
 
     url = models.URLField()
     description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    updated_at = models.DateTimeField(auto_now=True, db_index=True)
+    user = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        related_name="links",
+        on_delete=models.CASCADE,
+        help_text="User posted the link",
+    )
+
+
+class Vote(Base):
+    """Store information of votes."""
+
+    user = models.ForeignKey(User, related_name="votes", on_delete=models.CASCADE)
+    link = models.ForeignKey(Links, related_name="votes", on_delete=models.CASCADE)
