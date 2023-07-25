@@ -112,6 +112,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # GraphQL Configurations
+GRAPHQL_JWT = {"JWT_ALLOW_ANY_HANDLER": "common.middleware.allow_any"}
+
+# Graphene Configurations
 GRAPHENE = {
     "SCHEMA": "hackernews.schema.schema",
     "MIDDLEWARE": [
