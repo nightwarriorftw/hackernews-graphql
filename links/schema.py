@@ -10,6 +10,11 @@ class LinkType(DjangoObjectType):
         model = Links
 
 
+class VoteType(DjangoObjectType):
+    class Meta:
+        model = Vote
+
+
 class LinkQuery(graphene.ObjectType):
     links = graphene.List(LinkType)
 
@@ -41,6 +46,16 @@ class CreateLink(graphene.Mutation):
             description=link.description,
             user=link.user,
         )
+
+
+class VoteQuery(graphene.ObjectType):
+    votes = graphene.List(VoteType)
+
+    def resolve_votes(self, info, **kwargs):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("User is not authenticated !!")
+        return Vote.objects.filter(user=user)
 
 
 class CreateVote(graphene.Mutation):
