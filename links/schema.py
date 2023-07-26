@@ -1,6 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 from links.models import Links
+from links.models import Vote
 from users.schema import UserType
 
 
@@ -42,5 +43,28 @@ class CreateLink(graphene.Mutation):
         )
 
 
+class CreateVote(graphene.Mutation):
+    link = graphene.Field(LinkType)
+    user = graphene.Field(UserType)
+
+    class Arguments:
+        link_id = graphene.Int()
+
+    def mutate(self, info, link_id):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("Anonymous user request not allowed !!")
+        link = Links.objects.filter(id=link_id).first()
+        if not link:
+            raise Exception("Invalid link_id !!")
+        vote = Vote(link=link, user=user)
+        vote.save()
+        return CreateVote(link=vote.link, user=vote.user)
+
+
 class LinkMutation(graphene.ObjectType):
     create_link = CreateLink.Field()
+
+
+class VoteMutation(graphene.ObjectType):
+    create_vote = CreateVote.Field()
