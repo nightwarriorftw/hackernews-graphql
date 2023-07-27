@@ -1,4 +1,5 @@
 import graphene
+from graphql import GraphQLError
 from graphene_django import DjangoObjectType
 from links.models import Links
 from links.models import Vote
@@ -49,12 +50,16 @@ class CreateLink(graphene.Mutation):
 
 
 class VoteQuery(graphene.ObjectType):
+    links = graphene.List(LinkType)
     votes = graphene.List(VoteType)
+
+    def resolve_links(self, info, **kwargs):
+        return Links.objects.all()
 
     def resolve_votes(self, info, **kwargs):
         user = info.context.user
         if user.is_anonymous:
-            raise Exception("User is not authenticated !!")
+            raise GraphQLError("User is not authenticated !!")
         return Vote.objects.filter(user=user)
 
 
@@ -68,10 +73,10 @@ class CreateVote(graphene.Mutation):
     def mutate(self, info, link_id):
         user = info.context.user
         if user.is_anonymous:
-            raise Exception("Anonymous user request not allowed !!")
+            raise GraphQLError("Anonymous user request not allowed !!")
         link = Links.objects.filter(id=link_id).first()
         if not link:
-            raise Exception("Invalid link_id !!")
+            raise GraphQLError("Invalid link_id !!")
         vote = Vote(link=link, user=user)
         vote.save()
         return CreateVote(link=vote.link, user=vote.user)
