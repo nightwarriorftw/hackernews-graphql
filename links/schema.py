@@ -1,6 +1,7 @@
 import graphene
 from graphql import GraphQLError
 from graphene_django import DjangoObjectType
+from django.db.models import Q
 from links.models import Links
 from links.models import Vote
 from users.schema import UserType
@@ -17,10 +18,17 @@ class VoteType(DjangoObjectType):
 
 
 class LinkQuery(graphene.ObjectType):
-    links = graphene.List(LinkType)
+    links = graphene.List(LinkType, search=graphene.String())
+    votes = graphene.List(VoteType)
 
-    def resolve_links(self, info, **kwargs):
-        return Links.objects.all()
+    def resolve_links(self, info, search=None, **kwargs):
+        if search is None:
+            return Links.objects.all()
+        query = Q(Q(url__icontains=search) | Q(description__icontains=search))
+        return Links.objects.filter(query)
+
+    def resolve_votes(self, info, **kwargs):
+        return Vote.objects.all()
 
 
 class CreateLink(graphene.Mutation):
@@ -47,20 +55,6 @@ class CreateLink(graphene.Mutation):
             description=link.description,
             user=link.user,
         )
-
-
-class VoteQuery(graphene.ObjectType):
-    links = graphene.List(LinkType)
-    votes = graphene.List(VoteType)
-
-    def resolve_links(self, info, **kwargs):
-        return Links.objects.all()
-
-    def resolve_votes(self, info, **kwargs):
-        user = info.context.user
-        if user.is_anonymous:
-            raise GraphQLError("User is not authenticated !!")
-        return Vote.objects.filter(user=user)
 
 
 class CreateVote(graphene.Mutation):

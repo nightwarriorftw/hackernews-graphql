@@ -1,14 +1,13 @@
 import graphene
 import graphql_jwt
 from links.schema import LinkQuery
-from links.schema import VoteQuery
 from links.schema import LinkMutation
 from links.schema import VoteMutation
 from users.schema import UserMutation
 from users.schema import UserQuery
 
 
-class BaseQuery(LinkQuery, VoteQuery, UserQuery, graphene.ObjectType):
+class BaseQuery(LinkQuery, UserQuery, graphene.ObjectType):
     pass
 
 
